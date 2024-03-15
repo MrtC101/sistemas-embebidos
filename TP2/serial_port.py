@@ -25,9 +25,13 @@ class USBport:
         self.serial_port.write(data.encode("utf-8"))
 
     def readData(self) -> bool:
-        value = self.serial_port.readline().decode("utf-8")
-        if value != '':
-            self.queue.put(int(value))
+        frame = self.serial_port.readline().decode("utf-8")
+        if frame != '':
+            values = frame.split(";")
+            alarm = "off"
+            if values[1] == '!\n':
+                alarm = "on"
+            self.queue.put((int(values[0]),alarm))
         return True
     
     def queue_get(self):

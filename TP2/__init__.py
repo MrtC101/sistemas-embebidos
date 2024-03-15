@@ -8,7 +8,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     socketio = SocketIO(app,cors_allowed_origins="*")
 
-    @app.route("/tp1/dashboard",methods=(["GET"]))
+    @app.route("/tp2/dashboard",methods=(["GET"]))
     def dashboard():
 
         usb_port = USBport()       
@@ -21,9 +21,10 @@ def create_app(test_config=None):
         @copy_current_request_context    
         def send_thread():
             while(usb_port.is_connected()):
-                mesure = usb_port.queue_get()
+                (mesure, alarm) = usb_port.queue_get()
+                #print(mesure,alarm)
                 if(mesure!=''):
-                    socketio.emit('server_send_mesure',mesure,namespace="/tp1/dashboard")
+                    socketio.emit('server_send_mesure',{"mesure":mesure,"alert":alarm},namespace="/tp1/dashboard")
 
         threading.Thread(target=send_thread).start()
         threading.Thread(target=read_thread).start()
@@ -31,10 +32,7 @@ def create_app(test_config=None):
         @socketio.on('client_send_params',namespace="/tp1/dashboard")
         def read_params(request):
             str_params = "";
-            for i in range(0,len(request["params"])):
-                str_params += str(request["params"][i])
-                if( len(request["params"])-1 > i ):
-                    str_params += ";"
+            str_params += str(request["params"])
             usb_port.sendData(str_params)
 
         return render_template('dashboard/dashboard.html',
