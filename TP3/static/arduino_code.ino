@@ -84,20 +84,19 @@ void sendEventsData(){
   char *frame;
   while(i < last_eeAdd){
     EEPROM.get(i,curr_e);
-    char time[15];
-    itoa(curr_e.time,time,10);
-    char pin[1];
-    itoa(curr_e.pin_num,pin,10);
-    frame = strcat(time,";");
-    frame = strcat(frame,pin);
-    Serial.println(frame);
+    Serial.print("e;");
+    Serial.print(curr_e.time);
+    Serial.print(";");
+    Serial.println(curr_e.pin_num);
     i = i+sizeof(struct InterruptEvent);
   }
 }
 
 void vSendTimeTask(){
+  char *frame;
   while(true){
     EEPROM.get(2,curr_time);
+    Serial.print("t;");
     Serial.println(curr_time);
     vTaskDelay(1000);
   }
