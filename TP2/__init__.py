@@ -24,12 +24,12 @@ def create_app(test_config=None):
                 (mesure, alarm) = usb_port.queue_get()
                 #print(mesure,alarm)
                 if(mesure!=''):
-                    socketio.emit('server_send_mesure',{"mesure":mesure,"alert":alarm},namespace="/tp1/dashboard")
+                    socketio.emit('server_send_mesure',{"mesure":mesure,"alert":alarm},namespace="/tp2/dashboard")
 
         threading.Thread(target=send_thread).start()
         threading.Thread(target=read_thread).start()
 
-        @socketio.on('client_send_params',namespace="/tp1/dashboard")
+        @socketio.on('client_send_params',namespace="/tp2/dashboard")
         def read_params(request):
             str_params = "";
             str_params += str(request["params"])

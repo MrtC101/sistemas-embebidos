@@ -1,0 +1,64 @@
+{% extends "dashboard/base.html" %}
+
+{% block buttons%}
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <div class="container">
+        <div class="row">
+            <div class="card col-12" id="mesure-card">
+                <label>Clock:</label>
+                <p class="card" id="time">AA/MM/DD-hh:mm:ss</p>
+            </div>
+        </div>
+        <span class="border-bottom"></span>
+        <div class="row">
+            <form class="card col-12">
+                <div class="inputs">
+                    <input class="clock-input" type="text" inputmode="numeric" maxlength="2" />
+                    <span>/</span>
+                    <input class="clock-input" type="text"
+                        inputmode="numeric" maxlength="2" />
+                    <span>/</span>
+                    <input class="clock-input" type="text"
+                        inputmode="numeric" maxlength="2" />
+                    <span>-</span>
+                    <input class="clock-input" type="text"
+                        inputmode="numeric" maxlength="1" />
+                    <span>:</span>
+                    <input class="clock-input" type="text"
+                        inputmode="numeric" maxlength="1" />
+                    <span>:</span>
+                    <input class="clock-input" type="text"
+                        inputmode="numeric" maxlength="1" />
+                </div>
+                <button class="Button" onchange="updateTime">Update Clock</button>
+            </form>
+        </div>
+        <span class="border-bottom"></span>
+        <div class="row">
+            <form class="card">
+                <button class="Button" onchange="requestData">List Events</button>
+                <table id="event-table" class="table col-12">
+                    <thead>
+                        <tr>
+                          <th>Time</th>
+                          <th>Event</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AA/MM/DD-hh:mm:ss</td>
+                            <td>pin 2 interruped</td>
+                        </tr>
+                        <tr>
+                            <td>AA/MM/DD-hh:mm:ss</td>
+                            <td>pin 3 interruped</td>
+                        </tr>
+                    <tbody>
+                </table> 
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+
