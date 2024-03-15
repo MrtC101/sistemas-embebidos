@@ -1,0 +1,30 @@
+.switches{
+    display: inline-flex;
+    text-align: center;
+    .form-switch{
+        .form-check-input{
+            width: 3rem;
+            height: 2rem;    
+        }
+        display: flex; /* Utilizamos flexbox */
+        align-items: center; /* Centramos verticalmente */
+        justify-content: center; /* Centramos horizontalmente */    
+    }
+}
+
+.ranges{
+    display: flex;
+    margin: 15px;
+    .custom-range{
+        .form-check-label{
+            display: block;
+            align-items: center; /* Centramos verticalmente */
+            justify-content: center; /* Centramos horizontalmente */    
+        }
+        .vertical-range{
+            width: 200px; /* Ancho del rango */
+            height: 200px; /* Altura del rango */
+            transform: rotate(-90deg);
+        }
+    }
+}

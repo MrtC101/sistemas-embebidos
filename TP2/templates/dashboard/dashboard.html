@@ -1,0 +1,36 @@
+{% extends "dashboard/base.html" %}
+
+{% block buttons%}
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <div>
+        <form>
+            <div class="card switches">
+                <label class="form-check-label" for="flexSwitchCheckDefault">pin 13</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="pin13" onchange="sendParameters()">
+                </div>    
+            </div>
+            <div class="ranges">
+                <div class="custom-range">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">pin 9</label>
+                    <input type="range" class="vertical-range"  min="0" max="255" value="0" step="1" id="pin9" onchange="sendParameters()">    
+                </div>
+                <div class="custom-range">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">pin 10</label>
+                    <input type="range" class="vertical-range" min="0" max="255" value="0" step="1" id="pin10" onchange="sendParameters()">    
+                </div>
+                <div class="custom-range">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">pin 11</label>
+                    <input type="range" class="custom-range vertical-range" value="0" min="0" max="255" step="1" id="pin11" onchange="sendParameters()"> 
+                </div>
+            </div>
+        </form>        
+        <div class="card" id="mesure-card">
+            <label>Mesured light:</label>
+            <p class="card" id="mesure">0000</p>
+        </div>
+    </div>
+{% endblock %}
+
+
+
