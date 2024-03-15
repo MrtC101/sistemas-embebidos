@@ -7,6 +7,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     socketio = SocketIO(app,cors_allowed_origins="*")
+
     @app.route("/tp1/dashboard",methods=(["GET"]))
     def dashboard():
 
@@ -22,7 +23,7 @@ def create_app(test_config=None):
             while(usb_port.is_connected()):
                 mesure = usb_port.queue_get()
                 if(mesure!=''):
-                    emit('server_send_mesure',mesure,namespace="/tp1/dashboard",broadcast=True)
+                    socketio.emit('server_send_mesure',mesure,namespace="/tp1/dashboard")
 
         threading.Thread(target=send_thread).start()
         threading.Thread(target=read_thread).start()

@@ -18,7 +18,6 @@ void loop() {
   ledBrightness(10,vars[2]);
   ledBrightness(11,vars[3]);
   sendBitFrame(buildBitFrame(getMesuredLight()));
-  delay(1000);
 }
 
 String buildBitFrame(int lightMesure){

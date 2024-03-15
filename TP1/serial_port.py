@@ -26,17 +26,13 @@ class USBport:
 
     def readData(self) -> bool:
         value = self.serial_port.readline().decode("utf-8")
-        #print(value)
         if value != '':
             self.queue.put(int(value))
         return True
     
     def queue_get(self):
-        try:
-            value = self.queue.get()
-            return value
-        except:
-            return None
+        value = self.queue.get()
+        return value
 
     def is_connected(self):
         #print("puerto: "+str(self.serial_port.is_open))

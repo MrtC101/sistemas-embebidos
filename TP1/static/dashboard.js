@@ -14,15 +14,14 @@ function sendParameters(){
             )
 }
 
-socket.io.on('server_send_mesure',
+
+socket.on('server_send_mesure',
     (mesure) =>{
         document.getElementById("mesure").innerText = mesure;
         // Mapear el valor de entrada (0-1024) al rango de luminosidad HSL (0-100)
-        var lightness = (Number(mesure) / 1024) * 100;
-        // Mapear el valor de entrada al rango de tonalidad HSL (60-120)
-        var hue = (Number(mesure) / 1024) * 60 + 60;
+        var lightness = (1024.55 - mesure*0.55) * (100/1024);
         // Convertir el color de HSL a RGB
-        var color = `hsl(${hue}, 100%, ${lightness}%)`;
-        document.getElementById("mesure-card").style.backgroundColor = color;
+        var color = `hsl(56, 100%, ${lightness}%)`;
+        document.getElementById("mesure").style.backgroundColor = color;
     }
 );
