@@ -1,64 +1,64 @@
 {% extends "dashboard/base.html" %}
 
 {% block buttons%}
-    <link rel="stylesheet" href="/static/dashboard.css">
-    <div class="container">
-        <div class="row">
-            <div class="card col-12" id="mesure-card">
-                <label>Clock:</label>
-                <p class="card" id="time">AA/MM/DD-hh:mm:ss</p>
+<link rel="stylesheet" href="/static/dashboard.css">
+<div class="container">
+    <div class="row">
+        <div class="card col-12" id="mesure-card">
+            <label>Clock:</label>
+            <p class="card" id="time">AA/MM/DD-hh:mm:ss</p>
+        </div>
+    </div>
+    <span class="border-bottom"></span>
+    <div class="row">
+        <form class="card col-12">
+            <div class="inputs">
+                <input id="year_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                    maxlength="2" max=99 min=00 onchange="verifyContent(this)"/>
+                <span>/</span>
+                <input id="month_input" class="clock-input" type="number" placeholder="01" inputmode="numeric"
+                    maxlength="2" max="12" min="01" onchange="verifyContent(this)"/>
+                <span>/</span>
+                <input id="day_input" class="clock-input" type="number" placeholder="01" inputmode="numeric"
+                    maxlength="2" max="30" min="01" onchange="verifyContent(this)"/>
+                <span>-</span>
+                <input id="hour_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                    maxlength="2" max="23" min="00" onchange="verifyContent(this)"/>
+                <span>:</span>
+                <input id="minute_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                    maxlength="2" max="59" min="00" onchange="verifyContent(this)"/>
+                <span>:</span>
+                <input id="second_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                    maxlength="2" max="59" min="00" onchange="verifyContent(this)"/>
             </div>
-        </div>
-        <span class="border-bottom"></span>
-        <div class="row">
-            <form class="card col-12">
-                <div class="inputs">
-                    <input class="clock-input" type="text" inputmode="numeric" maxlength="2" />
-                    <span>/</span>
-                    <input class="clock-input" type="text"
-                        inputmode="numeric" maxlength="2" />
-                    <span>/</span>
-                    <input class="clock-input" type="text"
-                        inputmode="numeric" maxlength="2" />
-                    <span>-</span>
-                    <input class="clock-input" type="text"
-                        inputmode="numeric" maxlength="1" />
-                    <span>:</span>
-                    <input class="clock-input" type="text"
-                        inputmode="numeric" maxlength="1" />
-                    <span>:</span>
-                    <input class="clock-input" type="text"
-                        inputmode="numeric" maxlength="1" />
-                </div>
-                <button class="Button" onchange="updateTime">Update Clock</button>
-            </form>
-        </div>
-        <span class="border-bottom"></span>
-        <div class="row">
-            <form class="card">
-                <button class="Button" onchange="requestData">List Events</button>
+            <button id="update_button" type="button" class="btn btn-secondary" disabled>Update Clock</button>
+        </form>
+    </div>
+    <span class="border-bottom"></span>
+    <div class="row">
+        <form class="card">
+            <div class="row">
+                <button id="list_button" type="button" class="btn btn-success col-6">List Events</button>
+                <button id="delete_button" type="button" class="btn btn-danger col-6">Delete Events</button>
+            </div>
+            <div class="row">
                 <table id="event-table" class="table col-12">
                     <thead>
                         <tr>
-                          <th>Time</th>
-                          <th>Event</th>
+                            <th>Time</th>
+                            <th>Event</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>AA/MM/DD-hh:mm:ss</td>
-                            <td>pin 2 interruped</td>
-                        </tr>
-                        <tr>
-                            <td>AA/MM/DD-hh:mm:ss</td>
-                            <td>pin 3 interruped</td>
-                        </tr>
                     <tbody>
-                </table> 
-            </form>
-        </div>
+                </table>
+            </div>
+        </form>
     </div>
+</div>
+<script>
+    document.getElementById("update_button").addEventListener('click',updateTime)
+    document.getElementById("list_button").addEventListener('click',requestData)
+    document.getElementById("delete_button").addEventListener('click',deleteData)
+</script>
 {% endblock %}
-
-
-

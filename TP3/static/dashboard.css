@@ -26,9 +26,25 @@
         border-bottom: 3px solid rgba(0, 0, 0, 0.5);
         margin: 0 10px;
         text-align: center;
-        font-size: 36px;
-        cursor: not-allowed;
-        pointer-events: none;
+        font-size: 15px;
+        pointer-events:visible;
         margin-bottom: 15px;
     }
 }
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] { -moz-appearance:textfield; }
+
+input:invalid {
+    box-shadow: 0 0 5px 1px red;
+  }
+  
+input:focus:invalid {
+box-shadow: none;
+}
+  

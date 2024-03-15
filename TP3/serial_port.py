@@ -3,8 +3,8 @@ from queue import Queue
 
 class USBport:
     serial_port : serial.Serial;
-    queue : Queue = Queue();
-    seconds : int;
+    eventQueue : Queue = Queue();
+    currSeconds : int = None;
 
     def __init__(self):
         self.serial_port = serial.Serial(
@@ -23,22 +23,28 @@ class USBport:
         self.serial_port.reset_output_buffer()
 
     def sendData(self,data : str) -> bool:
+        print(data)
         self.serial_port.write(data.encode("utf-8"))
 
     def readData(self) -> bool:
-        //Cambiar
         frame = self.serial_port.readline().decode("utf-8")
         if frame != '':
-            values = frame.split(";")
-            alarm = "off"
-            if values[1] == '!\n':
-                alarm = "on"
-            self.queue.put((int(values[0]),alarm))
+            frame = frame.strip('\n').strip('\r')
+            subStr = frame.split(";")
+            if(subStr[0]=='t'):
+                self.currSeconds = int(subStr[1])
+            elif(subStr[0]=='e'):
+                self.eventQueue.put((int(subStr[1]),subStr[2]))
         return True
     
-    def queue_get(self):
-        value = self.queue.get()
-        return value
+    def getEvent(self):
+        return self.eventQueue.get()
+    
+    def haveEvents(self):
+        return (not self.eventQueue.empty())
+    
+    def getSeconds(self):
+        return self.currSeconds
 
     def is_connected(self):
         #print("puerto: "+str(self.serial_port.is_open))
