@@ -29,7 +29,8 @@ class USBport:
         if frame != '':
             values = frame.split(";")
             alarm = "off"
-            if values[1] == '!\n':
+            #print(values[1])
+            if values[1].find('!') != -1:
                 alarm = "on"
             self.queue.put((int(values[0]),alarm))
         return True

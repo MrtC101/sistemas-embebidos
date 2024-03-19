@@ -23,13 +23,14 @@ class USBport:
         self.serial_port.reset_output_buffer()
 
     def sendData(self,data : str) -> bool:
-        print(data)
+        #print("sent:",data,data.encode("utf-8"))
         self.serial_port.write(data.encode("utf-8"))
 
     def readData(self) -> bool:
         frame = self.serial_port.readline().decode("utf-8")
         if frame != '':
             frame = frame.strip('\n').strip('\r')
+            #print("returned:",frame)
             subStr = frame.split(";")
             if(subStr[0]=='t'):
                 self.currSeconds = int(subStr[1])

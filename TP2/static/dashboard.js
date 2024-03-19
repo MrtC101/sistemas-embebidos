@@ -1,5 +1,5 @@
 
-var socket = io("http://127.0.0.1:5000/tp2/dashboard");
+var socket = io("http://10.65.4.178:5000/tp2/dashboard");
 
 function sendParameters(){
     socket.emit('client_send_params',{params:1});
@@ -16,7 +16,7 @@ socket.on('server_send_mesure',
         document.getElementById("mesure").style.backgroundColor = color;
         
         alarm = response.alert
-        //console.log(alarm)
+        console.log(alarm)
         const icon = document.querySelector(".alarm-icon")
         if(alarm=="on"){
             icon.classList.add("on")

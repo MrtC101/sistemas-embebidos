@@ -1,5 +1,5 @@
 
-var socket = io("http://127.0.0.1:5000/tp3/dashboard");
+var socket = io("http://10.65.4.178:5000/tp3/dashboard");
 
 socket.on('server_send_time',
     (time) =>{

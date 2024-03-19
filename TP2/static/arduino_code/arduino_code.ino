@@ -16,6 +16,7 @@ TaskHandle_t SendSerialTask;
 TaskHandle_t AlarmTask;
 TaskHandle_t ReadSerialTask;
 TaskHandle_t BlinkingTask;
+TaskHandle_t AlarmBlinkingTask;
 
 void setup() {
   // put your setup code here, to run once:
@@ -27,8 +28,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(3),switchMesuringStateInterruption,RISING);
   
   xTaskCreate(vMesureLightTask, "MesureLight",70, NULL, 3, &MesureLightTask);
-  xTaskCreate(vSendSerialTask,"SendSerial",120, NULL, 3, &SendSerialTask);
-  xTaskCreate(vAlarmTask,"Alarm", 60, NULL, 3, &AlarmTask);
+  xTaskCreate(vSendSerialTask,"SendSerial",120 + 80, NULL, 3, &SendSerialTask);
+  xTaskCreate(vAlarmTask,"Alarm", 90, NULL, 3, &AlarmTask);
+  xTaskCreate(vAlarmBlinkingTask,"BlinkingAlarm", 90, NULL, 3, &AlarmBlinkingTask);
   xTaskCreate(vReadSerialTask,"ReadSerial", 70, NULL,3, &ReadSerialTask);
   xTaskCreate(vBlinkingTask,"Blinking", 60, NULL, 3, &BlinkingTask);
 }
@@ -54,7 +56,7 @@ void vSendSerialTask(){
   for(;;){
     vTaskDelay(pdMS_TO_TICKS(3000));
     sendBitFrame(mesure,alarm_state);
-    //Serial.println(uxTaskGetStackHighWaterMark(BlinkingTask));
+    //Serial.println(alarm_state);
   }
   vTaskDelete(NULL);
 }
@@ -67,14 +69,25 @@ void vAlarmTask(){
   for(;;){
     if(mesure >= 800){
       alarm_state = ALARM;
+      vTaskResume(AlarmBlinkingTask);
+    }else{
+      alarm_state = STABLE;
+      vTaskSuspend(AlarmBlinkingTask);
+      digitalWrite(12,LOW);
+    }
+  }
+}
+
+/**
+* Tarea que parpadea el pin 12
+*/
+void vAlarmBlinkingTask(){
+    while(true){
       digitalWrite(12,HIGH);
       delay(500);
       digitalWrite(12,LOW);
       delay(500);
-    }else{
-      alarm_state = STABLE;
     }
-  }
 }
 
 /**

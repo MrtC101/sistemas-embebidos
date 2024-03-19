@@ -22,7 +22,7 @@ def create_app(test_config=None):
         def send_thread():
             while(usb_port.is_connected()):
                 (mesure, alarm) = usb_port.queue_get()
-                #print(mesure,alarm)
+                print(mesure,alarm)
                 if(mesure!=''):
                     socketio.emit('server_send_mesure',{"mesure":mesure,"alert":alarm},namespace="/tp2/dashboard")
 

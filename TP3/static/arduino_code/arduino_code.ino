@@ -18,7 +18,8 @@ void setup() {
   EEPROM.get(0,last_eeAdd);
   //4-byte long int time in seconds.
   EEPROM.get(2,curr_time);
-  
+    xTaskCreate(vAddOneSecondTask, "AddOneSecond",100, NULL, 2, &AddOneSecondTask);
+
   // put your setup code here, to run once:
   Serial.begin(9600,SERIAL_8N1);
   pinMode(2, INPUT);
@@ -56,6 +57,7 @@ void vReadSerialTask(){
         case '*':{
           //Update Time
           long int seconds = Serial.readStringUntil("\n").toInt();
+          Serial.println(seconds);
           updateTime(seconds);
           break;
         };
@@ -65,7 +67,7 @@ void vReadSerialTask(){
   vTaskDelete(NULL);
 }
 
-void updateTime(int seconds){
+void updateTime(long int seconds){
   curr_time = seconds;
   EEPROM.put(2,curr_time);
 }
@@ -98,14 +100,14 @@ void vSendTimeTask(){
     EEPROM.get(2,curr_time);
     Serial.print("t;");
     Serial.println(curr_time);
-    vTaskDelay(1000);
+    vTaskDelay(66);
   }
   vTaskDelete(NULL);
 }
 
 void vAddOneSecondTask(){
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 1000;
+  const TickType_t xFrequency = 66;
   while(true){
     vTaskDelayUntil(&xLastWakeTime,xFrequency);
     updateTime(curr_time+1);
