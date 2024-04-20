@@ -8,7 +8,7 @@
 #define NOT_MESURING 0
 #define MESURING 1
 
-unsigned long int mesure = 0;
+unsigned short int mesure = 0;
 unsigned char mesuring_state = MESURING;
 char alarm_state = STABLE;
 
@@ -36,20 +36,20 @@ void setup() {
 
   // TP1
   pinMode(A3, INPUT);
-  pinMode(8, INPUT);
+  pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
   pinMode(10, OUTPUT);
   pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
   pinMode(13, OUTPUT);
   
   //TP2
   attachInterrupt(digitalPinToInterrupt(3),switchMesuringStateInterruption,RISING);
 
-  xTaskCreate(vMesureLightTask, "MesureLight",70, NULL, 1, &MesureLightTask);
-  xTaskCreate(vSendMesureTask,"SendMesure",70, NULL, 1, &SendMesureTask);
-  xTaskCreate(vAlarmTask,"Alarm", 70, NULL, 1, &AlarmTask);
-  xTaskCreate(vAlarmBlinkingTask,"BlinkingAlarm", 70, NULL, 1, &AlarmBlinkingTask);
-  xTaskCreate(vBlinkingTask,"Blinking", 60, NULL, 1, &BlinkingTask);
+  xTaskCreate(vMesureLightTask, "MesureLight",40, NULL, 1, &MesureLightTask);
+  xTaskCreate(vSendMesureTask,"SendMesure",74, NULL, 1, &SendMesureTask);
+  xTaskCreate(vAlarmBlinkingTask,"BlinkingAlarm", 54, NULL, 1, &AlarmBlinkingTask);
+  xTaskCreate(vBlinkingTask,"Blinking", 54, NULL, 1, &BlinkingTask);
   
   //TP3
   //2-byte int last address written in EEPROM.
@@ -61,9 +61,10 @@ void setup() {
   pinMode(3, INPUT);
   attachInterrupt(digitalPinToInterrupt(2),pin2Interruption,RISING);
   attachInterrupt(digitalPinToInterrupt(3),pin3Interruption,RISING);  
-  //xTaskCreate(vAddOneSecondTask, "AddOneSecond",110, NULL, 2, &AddOneSecondTask);
-  xTaskCreate(vReadSerialTask, "ReadSerial",150, NULL, 1, &ReadSerialTask);
-  //xTaskCreate(vSendTimeTask,"",40,NULL,1,&SendTimeTask);
+  xTaskCreate(vAddOneSecondTask, "AddOneSecond",50, NULL, 2, &AddOneSecondTask);
+  xTaskCreate(vSendTimeTask,"",50,NULL,1,&SendTimeTask);
+
+  xTaskCreate(vReadSerialTask, "ReadSerial",160, NULL, 1, &ReadSerialTask);
 }
 
 void loop() {
@@ -73,8 +74,6 @@ void loop() {
 void vReadSerialTask(){
   //Dicedes which action to do based on the symbol of the Serial bus.
   while(true){
-    Serial.print("wt:");
-    Serial.println(uxTaskGetStackHighWaterMark(NULL));
     if(Serial.available()>0){
       char frame[2];
       Serial.readBytes(frame,2);
@@ -156,6 +155,7 @@ void pin2Interruption(){
 }
 
 void pin3Interruption(){
+  //switchMesuringStateInterruption();
   saveEvent(3);
 }
 
@@ -203,8 +203,10 @@ void sendBitFrame(short lightMesure,char alarmState){
 * Tarea que envia los datos al bus serial cada 3 segundos.
 */
 void vSendMesureTask(){
+  SwitchAlarm();
   for(;;){
     vTaskDelay(pdMS_TO_TICKS(3000));
+    SwitchAlarm();
     Serial.print("l;");
     Serial.print(mesure);
     Serial.print(';');
@@ -214,23 +216,19 @@ void vSendMesureTask(){
   vTaskDelete(NULL);
 }
 
-
 /**
 * Tarea que enciende la alarma si la medida de luz detectada 
 * es mayor a 800 lux.
 */
-void vAlarmTask(){
-  for(;;){
-    if(mesure >= 800){
-      alarm_state = ALARM;
-      vTaskResume(AlarmBlinkingTask);
-    }else{
-      alarm_state = STABLE;
-      vTaskSuspend(AlarmBlinkingTask);
-      digitalWrite(12,LOW);
-    }
+void SwitchAlarm(){
+  if(mesure >= 800){
+    alarm_state = ALARM;
+    vTaskResume(AlarmBlinkingTask);
+  }else{
+    alarm_state = STABLE;
+    vTaskSuspend(AlarmBlinkingTask);
+    digitalWrite(12,LOW);
   }
-  vTaskDelete(NULL);
 }
 
 /**
@@ -271,9 +269,6 @@ void vBlinkingTask(){
       delay(200);
       digitalWrite(8, LOW);
       delay(1000);
-    }else{
-      //cuando quito esto falla. Una optimización finaliza la tarea?
-      delay(1);
     }
   }
   vTaskDelete(NULL);
@@ -291,23 +286,13 @@ void updatePins() {
   vars[3] = Serial.readStringUntil(';').toInt();
   vars[4] = Serial.readStringUntil('\n').toInt();
   ledSwitchKey(13,vars[0]);
-  ledBrightness(9,vars[1]);
-  ledBrightness(10,vars[2]);
-  ledBrightness(11,vars[3]);
+  analogWrite(9,vars[1]);
+  analogWrite(10,vars[2]);
+  analogWrite(11,vars[3]);
   if(vars[4]==1){
     switchMesuringStateInterruption();
   }
 }
-
-void ledBrightness(unsigned char ledNum,unsigned char brightness){
-  /*
-  * ledNum: led pin number
-  * brightness: value beteween 0 and 255
-  */
-  if(brightness <= 255 & brightness >= 0){
-    analogWrite(ledNum,brightness);
-  }
- }
 
 void ledSwitchKey(unsigned char ledNum,unsigned char value){
   /*
