@@ -1,0 +1,123 @@
+.clock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    
+    
+    .input:focus {
+        border-bottom: 3px solid orange;
+        outline: none;
+    }
+     
+    .input:nth-child(1) {
+        cursor: pointer;
+        pointer-events: all;
+    }
+}
+.border-bottom{
+    margin: 10px;
+}
+
+.inputs{
+    .clock-input{
+        width: 30px;
+        border: none;
+        border-bottom: 3px solid rgba(0, 0, 0, 0.5);
+        margin: 0 10px;
+        text-align: center;
+        font-size: 15px;
+        pointer-events:visible;
+        margin-bottom: 15px;
+    }
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] { -moz-appearance:textfield; }
+
+input:invalid {
+    box-shadow: 0 0 5px 1px red;
+  }
+  
+input:focus:invalid {
+box-shadow: none;
+}
+
+/*tp1*/
+.ranges{
+    display: block;
+    margin: 15px;
+    .custom-range{
+        .form-check-label{
+            display: block;
+            align-items: center; /* Centramos verticalmente */
+            justify-content: center; /* Centramos horizontalmente */    
+        }
+        .vertical-range{
+            width: 200px; /* Ancho del rango */
+            height: 20px; /* Altura del rango */
+            /*transform: rotate(-90deg);*/
+        }
+    }
+}
+
+/*tp2*/
+.unset-center{
+    text-align:center !important;
+    padding: 0px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.switches{
+    display:inline-table;
+    .form-switch{
+        .form-check-input{
+            width: 3rem;
+            height: 2rem;    
+        }
+        display: flex; /* Utilizamos flexbox */
+        align-items: center; /* Centramos verticalmente */
+        justify-content: center; /* Centramos horizontalmente */    
+    }
+}
+
+.onofswitch{
+    display:inline-table;
+    font-size: 12px;
+    .form-switch{
+        .form-check-input{
+            width: 3rem;
+            height: 2rem;    
+        }
+        display: flex; /* Utilizamos flexbox */
+        align-items: center; /* Centramos verticalmente */
+        justify-content: center; /* Centramos horizontalmente */    
+    }
+}
+
+.alarm{
+    align-items: center;
+    justify-content: center;
+    svg{
+        width: 50px;
+        height: auto; 
+        color:red;
+    }
+
+    .alarm-icon{
+        width: 100%; /* Ancho del SVG al 100% del contenedor */
+        height: 100%; /* Altura del SVG al 100% del contenedor */
+        opacity: 0; /* Inicialmente oculto */
+        transition: opacity 0.5s ease; /* Transición suave de opacidad */
+    }
+      
+    .on {
+        opacity: 1 !important; /* Mostrar el SVG */
+    }
+}

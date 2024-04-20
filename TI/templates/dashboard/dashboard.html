@@ -1,0 +1,117 @@
+{% extends "dashboard/base.html" %}
+
+{% block buttons%}
+<link rel="stylesheet" href="/static/dashboard.css">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <form>
+                        <div class="card switches">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">pin 13</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="pin13" onchange="sendParameters()">
+                            </div>    
+                        </div>
+                        <div class="ranges">
+                            <div class="custom-range">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">pin 9</label>
+                                <input type="range" class="vertical-range"  min="0" max="255" value="0" step="1" id="pin9" onchange="sendParameters()">    
+                            </div>
+                            <div class="custom-range">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">pin 10</label>
+                                <input type="range" class="vertical-range" min="0" max="255" value="0" step="1" id="pin10" onchange="sendParameters()">    
+                            </div>
+                            <div class="custom-range">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">pin 11</label>
+                                <input type="range" class="custom-range vertical-range" value="0" min="0" max="255" step="1" id="pin11" onchange="sendParameters()"> 
+                            </div>
+                        </div>
+                    </form>        
+                </div>
+                <div class="container">
+                    <div class="row mx-3">
+                        <form class="card onofswitch unset-center col-3 ">
+                            <label for="flexSwitchCheckDefault">OFF / ON</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="onof" onchange="sendParameters()" checked>
+                            </div> 
+                        </form>
+                        <div class="card col-6" id="mesure-card">
+                            <label>Mesured light:</label>
+                            <p class="card" id="mesure">0000</p>
+                        </div>
+                        <div class="card col-3 alarm">
+                            <svg class="bi bi-exclamation-triangle-fill alarm-icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"></path>
+                            </svg>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="container">
+                    <div class="row">
+                        <div class="card col-12" id="mesure-card">
+                            <label>Clock:</label>
+                            <p class="card" id="time">AA/MM/DD-hh:mm:ss</p>
+                        </div>
+                    </div>
+                    <span class="border-bottom"></span>
+                    <div class="row">
+                        <form class="card col-12">
+                            <div class="inputs">
+                                <input id="year_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                                    maxlength="2" max=99 min=00 onchange="verifyContent(this)"/>
+                                <span>/</span>
+                                <input id="month_input" class="clock-input" type="number" placeholder="01" inputmode="numeric"
+                                    maxlength="2" max="12" min="01" onchange="verifyContent(this)"/>
+                                <span>/</span>
+                                <input id="day_input" class="clock-input" type="number" placeholder="01" inputmode="numeric"
+                                    maxlength="2" max="30" min="01" onchange="verifyContent(this)"/>
+                                <br>
+                                <span>-</span>
+                                <br>
+                                <input id="hour_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                                    maxlength="2" max="23" min="00" onchange="verifyContent(this)"/>
+                                <span>:</span>
+                                <input id="minute_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                                    maxlength="2" max="59" min="00" onchange="verifyContent(this)"/>
+                                <span>:</span>
+                                <input id="second_input" class="clock-input" type="number" placeholder="00" inputmode="numeric"
+                                    maxlength="2" max="59" min="00" onchange="verifyContent(this)"/>
+                            </div>
+                            <button id="update_button" type="button" class="btn btn-secondary" disabled>Update Clock</button>
+                        </form>
+                    </div>
+                    <span class="border-bottom"></span>
+                    <div class="row">
+                        <form class="card">
+                            <div class="row">
+                                <button id="list_button" type="button" class="btn btn-success col-6">List Events</button>
+                                <button id="delete_button" type="button" class="btn btn-danger col-6">Delete Events</button>
+                            </div>
+                            <div class="row">
+                                <table id="event-table" class="table col-12">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Event</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    document.getElementById("update_button").addEventListener('click',updateTime)
+                    document.getElementById("list_button").addEventListener('click',requestData)
+                    document.getElementById("delete_button").addEventListener('click',deleteData)
+                </script>
+            </div>
+        </div>
+    </div>
+{% endblock %}
