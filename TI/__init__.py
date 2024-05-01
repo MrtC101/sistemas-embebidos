@@ -31,6 +31,18 @@ def create_app(test_config=None):
                     timeStamp = toTimeStamp(seconds)
                     print(timeStamp)
                     socketio.emit('server_send_time',timeStamp,namespace=namesp)
+                
+        @copy_current_request_context    
+        def send_mesure_thread():
+            last_mesure = 0;
+            while(usb_port.is_connected()):
+                (mesure, alarm) = usb_port.getMesure()
+                if(mesure!=last_mesure):
+                    last_mesure=mesure
+                    socketio.emit('server_send_mesure',{
+                        "mesure":mesure,
+                        "alert":alarm
+                    },namespace=namesp)
 
         @copy_current_request_context    
         def send_data_thread():
@@ -41,11 +53,11 @@ def create_app(test_config=None):
                         "time": toTimeStamp(event[0]),
                         "event":f'Interrupción del pin {event[1]}'
                         },namespace=namesp)
-            
         
         threading.Thread(target=send_data_thread).start()
         threading.Thread(target=send_time_thread).start()
         threading.Thread(target=read_thread).start()
+        threading.Thread(target=send_mesure_thread).start()
 
         @socketio.on('client_request_delete',namespace=namesp)
         def sendEvents():
@@ -61,9 +73,12 @@ def create_app(test_config=None):
 
         @socketio.on('client_send_params',namespace=namesp)
         def read_params(request):
-            str_params = "";
-            str_params += str(request["params"])
-            usb_port.sendData("+;" +str_params)
+            str_params = "+;";
+            for p in request["params"]:
+                str_params += str(p)
+                str_params += ';'
+            #print(str_params)
+            usb_port.sendData(str_params)
 
         return render_template('dashboard/dashboard.html',
                             conn=usb_port.is_connected(),

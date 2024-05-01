@@ -24,7 +24,7 @@ struct InterruptEvent{
   unsigned char pin_num;
 };
 
-unsigned short int last_eeAdd;
+unsigned int last_eeAdd;
 unsigned long int curr_time;
 
 TaskHandle_t AddOneSecondTask;
@@ -44,19 +44,29 @@ void setup() {
   pinMode(13, OUTPUT);
   
   //TP2
-  attachInterrupt(digitalPinToInterrupt(3),switchMesuringStateInterruption,RISING);
+  //attachInterrupt(digitalPinToInterrupt(3),switchMesuringStateInterruption,RISING);
 
-  xTaskCreate(vMesureLightTask, "MesureLight",40, NULL, 1, &MesureLightTask);
+  xTaskCreate(vMesureLightTask, "MesureLight",70, NULL, 1, &MesureLightTask);
   xTaskCreate(vSendMesureTask,"SendMesure",74, NULL, 1, &SendMesureTask);
   xTaskCreate(vAlarmBlinkingTask,"BlinkingAlarm", 54, NULL, 1, &AlarmBlinkingTask);
   xTaskCreate(vBlinkingTask,"Blinking", 54, NULL, 1, &BlinkingTask);
   
   //TP3
-  //2-byte int last address written in EEPROM.
-  EEPROM.get(0,last_eeAdd);
-  //4-byte long int time in seconds.
-  EEPROM.get(2,curr_time);
-
+  unsigned char simulated = 1;
+  if(simulated){
+    last_eeAdd = 6;
+    curr_time = 0;
+    //2-byte int last address written in EEPROM.
+    EEPROM.put(0,last_eeAdd);
+    //4-byte long int time in seconds.
+    EEPROM.put(2,curr_time);
+  }else{
+    //2-byte int last address written in EEPROM.
+    EEPROM.get(0,last_eeAdd);
+    //4-byte long int time in seconds.
+    EEPROM.get(2,curr_time);
+  }
+  
   pinMode(2, INPUT);
   pinMode(3, INPUT);
   attachInterrupt(digitalPinToInterrupt(2),pin2Interruption,RISING);
@@ -64,7 +74,7 @@ void setup() {
   xTaskCreate(vAddOneSecondTask, "AddOneSecond",50, NULL, 2, &AddOneSecondTask);
   xTaskCreate(vSendTimeTask,"",50,NULL,1,&SendTimeTask);
 
-  xTaskCreate(vReadSerialTask, "ReadSerial",160, NULL, 1, &ReadSerialTask);
+  xTaskCreate(vReadSerialTask, "ReadSerial",180, NULL, 1, &ReadSerialTask);
 }
 
 void loop() {
@@ -155,13 +165,13 @@ void pin2Interruption(){
 }
 
 void pin3Interruption(){
-  //switchMesuringStateInterruption();
+  switchMesuringStateInterruption();
   saveEvent(3);
 }
 
 void saveEvent(unsigned char pinNum){
-  unsigned long int curr_time;
   EEPROM.get(2,curr_time);
+  EEPROM.get(0,last_eeAdd);
   struct InterruptEvent new_event;
   new_event.time = curr_time;
   new_event.pin_num = pinNum;
@@ -180,6 +190,20 @@ void vMesureLightTask(){
       mesure = analogRead(A3);
   }
   vTaskDelete(NULL);
+}
+
+/**
+* Interrupción que incia o detiene la tarea para medir luz.
+*/
+void switchMesuringStateInterruption(){
+  if(mesuring_state == NOT_MESURING){
+    mesuring_state = MESURING;
+    vTaskResume(MesureLightTask);
+  }else if(mesuring_state == MESURING){
+    mesuring_state = NOT_MESURING;
+    mesure = 0;
+    vTaskSuspend(MesureLightTask);
+  }
 }
 
 /**
@@ -210,8 +234,7 @@ void vSendMesureTask(){
     Serial.print("l;");
     Serial.print(mesure);
     Serial.print(';');
-    Serial.print(alarm_state);
-    Serial.println('\0');
+    Serial.println(alarm_state);
   }
   vTaskDelete(NULL);
 }
@@ -245,22 +268,8 @@ void vAlarmBlinkingTask(){
 }
 
 /**
-* Interrupción que incia o detiene la tarea para medir luz.
-*/
-void switchMesuringStateInterruption(){
-  if(mesuring_state == NOT_MESURING){
-    mesuring_state = MESURING;
-    vTaskResume(MesureLightTask);
-  }else if(mesuring_state == MESURING){
-    mesuring_state = NOT_MESURING;
-    mesure = 0;
-    vTaskSuspend(MesureLightTask);
-  }
-}
-
-/**
 * Tarea que se encarga de hacer parpadear el led en el pin 8.
-(cambio del 11 al 8
+(cambio del 11 al 8)
 */
 void vBlinkingTask(){
   while(true){
@@ -269,6 +278,8 @@ void vBlinkingTask(){
       delay(200);
       digitalWrite(8, LOW);
       delay(1000);
+    }else{
+      delay(1);
     }
   }
   vTaskDelete(NULL);
@@ -289,8 +300,13 @@ void updatePins() {
   analogWrite(9,vars[1]);
   analogWrite(10,vars[2]);
   analogWrite(11,vars[3]);
-  if(vars[4]==1){
-    switchMesuringStateInterruption();
+  if(vars[4]){
+    mesuring_state = MESURING;
+    vTaskResume(MesureLightTask);
+  }else{
+    mesuring_state = NOT_MESURING;
+    mesure = 0;
+    vTaskSuspend(MesureLightTask);
   }
 }
 

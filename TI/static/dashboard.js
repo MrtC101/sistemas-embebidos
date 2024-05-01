@@ -1,4 +1,4 @@
-url = "http://127.0.0.1:5000/ti/dashboard"
+url = "http://10.65.4.239:5000/ti/dashboard"
 
 var socket = io(url);
 
@@ -94,8 +94,9 @@ function sendParameters(){
 
 
 socket.on('server_send_mesure',
-    (mesure) =>{
+    (response) =>{
         mesure = response.mesure
+        console.log(mesure)
         document.getElementById("mesure").innerText = mesure;
         // Mapear el valor de entrada (0-1024) al rango de luminosidad HSL (0-100)
         var lightness = (1024.55 - mesure*0.55) * (100/1024);
